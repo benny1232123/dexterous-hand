@@ -1440,6 +1440,11 @@
               <FileType>1</FileType>
               <FilePath>..\Algorithm\user_lib.c</FilePath>
             </File>
+            <File>
+              <FileName>filter.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Algorithm\filter.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

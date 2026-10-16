@@ -78,6 +78,7 @@
 "ctrboard-h7_all\gripper_task.o"
 "ctrboard-h7_all\mahonyahrs.o"
 "ctrboard-h7_all\user_lib.o"
+"ctrboard-h7_all\filter.o"
 --library_type=microlib --strict --scatter "CtrBoard-H7_ALL\CtrBoard-H7_ALL.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers
