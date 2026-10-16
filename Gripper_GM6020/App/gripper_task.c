@@ -47,7 +47,6 @@ typedef enum
 /* reference-style controller state */
 static PID          pid_angle;
 static PID          pid_omega;
-static KalmanFilter motor0_kalman = { 0.0f, 1.0f, 0.1f, 1.0f };
 
 static float target_angle_deg = 0.0f;
 static float target_omega_rps = 0.0f;
@@ -144,12 +143,15 @@ void GripperTask_Entry(void const *argument)
         }
         key_prev = key;
 
-        /* ---- communication watchdog ---- */
+        /* ---- communication watchdog: guards an active run, never starts one ---- */
         if (!GM6020_IsOnline(FB_TIMEOUT_MS))
         {
-            st          = ST_FAULT;
-            cmd_ma      = 0.0f;
-            stall_active = 0;
+            if (st == ST_RUN)
+            {
+                st           = ST_FAULT;
+                cmd_ma       = 0.0f;
+                stall_active = 0;
+            }
         }
         else if (st == ST_FAULT)
         {
