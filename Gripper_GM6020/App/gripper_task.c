@@ -27,7 +27,6 @@
 #define CUR_LIMIT_MA          2000.0f
 #define ANGLE_LIMIT_DEG       180.0f
 #define STALL_TIME_MS         500
-#define STALL_CUR_MA          200.0f    /* reachable within a realistic stall */
 #define STALL_SPEED_RPS       0.1f     /* must stay below ANGLE_OUT_LIMIT_RPS (0.4775) */
 #define TEMP_LIMIT_C          80
 #define FB_TIMEOUT_MS         500
@@ -163,8 +162,8 @@ void GripperTask_Entry(void const *argument)
 
         if (st == ST_RUN)
         {
-            /* ---- stall detection: current but no speed ---- */
-            if ((abss(cmd_ma) > STALL_CUR_MA) && (abss(gm6020.speed_rpm / 60.0f) < STALL_SPEED_RPS))
+            /* ---- stall detection: commanded to rotate, but not rotating ---- */
+            if ((abss(target_omega_rps) > STALL_SPEED_RPS) && (abss(gm6020.speed_rpm / 60.0f) < STALL_SPEED_RPS))
             {
                 if (!stall_active)
                 {
