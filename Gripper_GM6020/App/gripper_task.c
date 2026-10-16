@@ -27,7 +27,7 @@
 #define CUR_LIMIT_MA          2000.0f
 #define ANGLE_LIMIT_DEG       180.0f
 #define STALL_TIME_MS         500
-#define STALL_CUR_MA          500.0f
+#define STALL_CUR_MA          200.0f    /* reachable within a realistic stall */
 #define STALL_SPEED_RPS       0.1f     /* must stay below ANGLE_OUT_LIMIT_RPS (0.4775) */
 #define TEMP_LIMIT_C          80
 #define FB_TIMEOUT_MS         500
@@ -41,7 +41,8 @@ typedef enum
 {
     ST_IDLE = 0,
     ST_RUN,
-    ST_FAULT
+    ST_FAULT,      /* comms lost; auto-recovers when feedback returns */
+    ST_STALL       /* stall latched; needs a new key press */
 } GrpState_t;
 
 /* reference-style controller state */
@@ -133,7 +134,7 @@ void GripperTask_Entry(void const *argument)
 
         /* ---- key press -> start angle rotation test sequence ---- */
         key = BSP_UserKey_Detect();
-        if ((key == BUTTON_PRESSED) && (key_prev == 0) && (st == ST_IDLE))
+        if ((key == BUTTON_PRESSED) && (key_prev == 0) && ((st == ST_IDLE) || (st == ST_STALL)))
         {
             st              = ST_RUN;
             seq_idx         = 0;
@@ -172,7 +173,7 @@ void GripperTask_Entry(void const *argument)
                 }
                 else if ((now - stall_start_ms) >= STALL_TIME_MS)
                 {
-                    st           = ST_FAULT;
+                    st           = ST_STALL;   /* latched: needs a new key press */
                     cmd_ma       = 0.0f;
                     stall_active = 0;
                 }
@@ -183,22 +184,24 @@ void GripperTask_Entry(void const *argument)
             }
 
             if (st == ST_RUN)
+            {
                 gripper_loop_control();
 
-            /* ---- advance the test sequence ---- */
-            if ((now - st_tick) >= SEQ_STEP_MS)
-            {
-                seq_idx++;
-                if (seq_idx >= SEQ_STEPS)
+                /* ---- advance the test sequence ---- */
+                if ((now - st_tick) >= SEQ_STEP_MS)
                 {
-                    st     = ST_IDLE;
-                    cmd_ma = 0.0f;
-                }
-                else
-                {
-                    st_tick = now;
-                    target_angle_deg = seq_target_deg[seq_idx];
-                    PID_SetTarget(&pid_angle, target_angle_deg);
+                    seq_idx++;
+                    if (seq_idx >= SEQ_STEPS)
+                    {
+                        st     = ST_IDLE;
+                        cmd_ma = 0.0f;
+                    }
+                    else
+                    {
+                        st_tick = now;
+                        target_angle_deg = seq_target_deg[seq_idx];
+                        PID_SetTarget(&pid_angle, target_angle_deg);
+                    }
                 }
             }
         }
