@@ -32,20 +32,20 @@ void can_filter_init(void)
 	
 	fdcan_filter.IdType = FDCAN_STANDARD_ID;                       //��׼ID
 	fdcan_filter.FilterIndex = 0;                                  //�˲�������                   
-	fdcan_filter.FilterType = FDCAN_FILTER_RANGE;                  //�˲�������
+	fdcan_filter.FilterType = FDCAN_FILTER_MASK;                  //�˲�������
 	fdcan_filter.FilterConfig = FDCAN_FILTER_TO_RXFIFO0;           //������0������FIFO0  
-	fdcan_filter.FilterID1 = 0x0000;                               //32λID
-	fdcan_filter.FilterID2 = 0x0000;                               //���FDCAN����Ϊ��ͳģʽ�Ļ����������32λ����
+	fdcan_filter.FilterID1 = 0x205;                               //32λID
+	fdcan_filter.FilterID2 = 0x000;                               //���FDCAN����Ϊ��ͳģʽ�Ļ����������32λ����
 	if(HAL_FDCAN_ConfigFilter(&hfdcan1,&fdcan_filter)!=HAL_OK) 		 //�˲�����ʼ��
 	{
 		Error_Handler();
 	}
-	fdcan_filter.FilterIndex = 1;
+	fdcan_filter.FilterIndex = 0;
 	if(HAL_FDCAN_ConfigFilter(&hfdcan2,&fdcan_filter)!=HAL_OK)
 	{
 		Error_Handler();
 	}
-	fdcan_filter.FilterIndex = 2;
+	fdcan_filter.FilterIndex = 0;
 	if(HAL_FDCAN_ConfigFilter(&hfdcan3,&fdcan_filter)!=HAL_OK)
 	{
 		Error_Handler();

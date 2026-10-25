@@ -9,6 +9,9 @@ extern "C" {
 
 void GripperTask_Entry(void const *argument);
 
+/* 1 kHz control step, called from the TIM1 update interrupt */
+void GripperControl_OnTimer(void);
+
 #ifdef __cplusplus
 }
 #endif

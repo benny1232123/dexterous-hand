@@ -27,6 +27,7 @@ typedef struct
     volatile float    angle_deg;      /* 0..360                           */
     volatile float    speed_rpm_f;
     volatile float    speed_rad_s;
+    volatile float    speed_rps;      /* Kalman-filtered, updated in RX   */
     volatile float    current_ma;
     volatile float    angle_unwrap;   /* multi-turn deg                   */
 

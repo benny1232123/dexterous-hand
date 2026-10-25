@@ -14,4 +14,5 @@ typedef enum
 }KeyState;
 
 int8_t BSP_UserKey_Detect(void);
+uint32_t BSP_UserKey_PressCount(void);
 #endif

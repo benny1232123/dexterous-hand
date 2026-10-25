@@ -2,6 +2,7 @@
 
 KeyState keyState = NO_DETECT;
 uint32_t overTick = 0;
+static volatile uint32_t pressCount = 0;
 
 int8_t BSP_UserKey_Detect(void)
 {
@@ -25,6 +26,7 @@ int8_t BSP_UserKey_Detect(void)
             if (pinSta == GPIO_PIN_RESET)
             {
                 keyState = DETECTED;
+                pressCount++;
                 return BUTTON_PRESSED;
             }
             else
@@ -44,6 +46,11 @@ int8_t BSP_UserKey_Detect(void)
         return BUTTON_NOT_PRESSED;
     }
     return BUTTON_NOT_PRESSED;
+}
+
+uint32_t BSP_UserKey_PressCount(void)
+{
+    return pressCount;
 }
 
 

@@ -33,6 +33,7 @@
 /* USER CODE BEGIN Includes */
 #include "vofa.h"
 #include "w25q64.h"
+#include "gripper_task.h"
 #include <stdio.h>
 /* USER CODE END Includes */
 
@@ -343,6 +344,10 @@ void SystemClock_Config(void)
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
   /* USER CODE BEGIN Callback 0 */
+  if (htim->Instance == TIM1)
+  {
+    GripperControl_OnTimer();
+  }
 
   /* USER CODE END Callback 0 */
   if (htim->Instance == TIM23) {

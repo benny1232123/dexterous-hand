@@ -1,5 +1,6 @@
 #include "gm6020.h"
 #include "can_bsp.h"
+#include "filter.h"
 
 GM6020_Motor_t gm6020;
 
@@ -71,6 +72,7 @@ void GM6020_OnRx(FDCAN_HandleTypeDef *hfdcan, uint32_t id, const uint8_t *d)
     gm6020.angle_deg    = (float)raw * (360.0f / 8192.0f);
     gm6020.speed_rpm_f  = (float)gm6020.speed_rpm;
     gm6020.speed_rad_s  = (float)gm6020.speed_rpm * (6.28318530718f / 60.0f);
+    gm6020.speed_rps    = KalmanFilter_Update(&motor0_kalman, (float)gm6020.speed_rpm / 60.0f);
     gm6020.current_ma   = (float)gm6020.current_raw * (GM6020_CUR_MAX_MA / (float)GM6020_RAW_MAX);
 
     /* multi-turn unwrap */
@@ -86,5 +88,7 @@ void GM6020_OnRx(FDCAN_HandleTypeDef *hfdcan, uint32_t id, const uint8_t *d)
 
 uint8_t GM6020_IsOnline(uint32_t timeout_ms)
 {
+    if (!gm6020.online)
+        return 0;                       /* no feedback frame received yet */
     return (HAL_GetTick() - gm6020.last_rx_ms) <= timeout_ms;
 }
